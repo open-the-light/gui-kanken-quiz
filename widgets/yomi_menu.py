@@ -6,12 +6,14 @@ from PySide6.QtWidgets import (
     QLabel
 )
 
-class QuizMenu(QWidget):
+class YomiMenu(QWidget):
     def __init__(self, start_quiz):
         super().__init__()
 
         layout = QVBoxLayout(self)
-        layout.addWidget(QLabel("クイズｎ設定を選べよ"))
+        layout.addWidget(QLabel("クイズの設定を選べよ"))
+
+        self.selected_grades = None
 
         self.gradePicker = QListWidget()
         self.gradePicker.setSelectionMode(QListWidget.SelectionMode.MultiSelection)
@@ -25,4 +27,6 @@ class QuizMenu(QWidget):
         layout.addWidget(self.start_quiz_button)
 
     def grade_changed(self):
-        print([i.text() for i in self.gradePicker.selectedItems()])
+        grades = [i.text() for i in self.gradePicker.selectedItems()]
+        print(grades)
+        self.selected_grades = grades
