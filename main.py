@@ -54,6 +54,8 @@ class MainWindow(QMainWindow):
         self.stack.setCurrentIndex(0)
 
 app = QApplication([])
+with open("style.qss", "r", encoding="utf-8") as f:
+    app.setStyleSheet(f.read())
 window = MainWindow()
 window.show()
 
