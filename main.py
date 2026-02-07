@@ -9,9 +9,10 @@ from PySide6.QtWidgets import (
     QWidget
 )
 from PySide6.QtCore import QSize
-from widgets.yomi_main import YomiMode
+from widgets.yomi_mode import YomiMode
 from widgets.yomi_menu import YomiMenu
 from widgets.sidebar import Sidebar
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -43,11 +44,17 @@ class MainWindow(QMainWindow):
 
     def yomi_quiz_start(self):
         print("starting quiz!")
-        self.yomi_mode.generate_question_set(self.yomi_menu.selected_grades)
+        self.yomi_mode.generate_question_set(
+            self.yomi_menu.questions,
+            self.yomi_menu.selected_grades,
+            self.yomi_menu.kanji_only,
+            self.yomi_menu.jukugo_only
+        )
         self.stack.setCurrentIndex(1)
 
     def yomi_quiz_end(self):
         print("ending quiz")
+        self.yomi_menu.reset_menu_screen()
         self.stack.setCurrentIndex(0)
 
     def show_yomi_menu(self):

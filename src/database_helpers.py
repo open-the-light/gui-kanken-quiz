@@ -25,10 +25,15 @@ def get_kanji_by_grade(grade: str) -> pd.DataFrame:
         df = pd.read_sql_query(sql_query, conn)
     return df
 
-def get_goi_by_grades(grades: List) -> pd.DataFrame:
+def get_goi_by_grades(grades: List, kanji_only: bool = False, jukugo_only: bool = False) -> pd.DataFrame:
     g = ", ".join([str(grade) for grade in grades])
+    filters = ""
+    if jukugo_only:
+        filters = "and non_kanji = 0 and goi_length = 2"
+    elif kanji_only and not jukugo_only:
+        filters = "and non_kanji = 0"
     with sqlite3.connect(path) as conn:
-        sql_query = f"select * from goi where grade in ({g}) limit 10"
+        sql_query = f"select * from goi where grade in ({g}) {filters}"
         df = pd.read_sql_query(sql_query, conn)
     return df
 

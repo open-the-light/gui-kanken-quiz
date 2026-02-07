@@ -3,8 +3,11 @@ from PySide6.QtWidgets import (
     QListWidget,
     QPushButton,
     QVBoxLayout,
-    QLabel
+    QLabel,
+    QCheckBox,
+    QSpinBox
 )
+from PySide6.QtCore import Qt
 
 class YomiMenu(QWidget):
     def __init__(self, start_quiz):
@@ -13,7 +16,16 @@ class YomiMenu(QWidget):
         layout = QVBoxLayout(self)
         layout.addWidget(QLabel("クイズの設定を選べよ"))
 
+        self.questions = 10
         self.selected_grades = None
+        self.kanji_only = True
+        self.jukugo_only = False
+
+        self.question_amount = QSpinBox()
+        self.question_amount.setMinimum(1)
+        self.question_amount.setValue(self.questions)
+        self.question_amount.valueChanged.connect(self.question_amount_changed)
+        layout.addWidget(self.question_amount)
 
         self.gradePicker = QListWidget()
         self.gradePicker.setSelectionMode(QListWidget.SelectionMode.MultiSelection)
@@ -21,12 +33,43 @@ class YomiMenu(QWidget):
         self.gradePicker.selectionModel().selectionChanged.connect(self.grade_changed)
         layout.addWidget(self.gradePicker)
 
+        self.kanji_only_box = QCheckBox("Only words comprised entirely of kanji will appear")
+        self.kanji_only_box.setCheckState(Qt.CheckState.Checked)
+        self.kanji_only_box.stateChanged.connect(self.kanji_only_changed)
+        layout.addWidget(self.kanji_only_box)
+
+        self.jukugo_only_box = QCheckBox("Only words comprised of exactly two kanji will appear")
+        self.jukugo_only_box.setCheckState(Qt.CheckState.Unchecked)
+        self.jukugo_only_box.stateChanged.connect(self.jukugo_only_changed)
+        layout.addWidget(self.jukugo_only_box)
+
         self.start_quiz_button = QPushButton()
         self.start_quiz_button.setText("スタート！")
         self.start_quiz_button.clicked.connect(start_quiz)
         layout.addWidget(self.start_quiz_button)
 
+    def question_amount_changed(self, n):
+        print(n)
+        self.questions = n
+
     def grade_changed(self):
         grades = [i.text() for i in self.gradePicker.selectedItems()]
         print(grades)
         self.selected_grades = grades
+
+    def kanji_only_changed(self, state):
+        self.kanji_only = Qt.CheckState(state) == Qt.CheckState.Checked
+
+    def jukugo_only_changed(self, state):
+        self.jukugo_only = Qt.CheckState(state) == Qt.CheckState.Checked
+
+    def reset_menu_screen(self):
+        self.selected_grades = None
+        self.kanji_only = True
+        self.jukugo_only = False
+
+        self.question_amount.setValue(10)
+        self.gradePicker.clearSelection()
+        self.kanji_only_box.setCheckState(Qt.CheckState.Checked)
+        self.jukugo_only_box.setCheckState(Qt.CheckState.Unchecked)
+
