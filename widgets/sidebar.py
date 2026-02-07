@@ -16,6 +16,7 @@ class Sidebar(QWidget):
 
         title_label = QLabel("漢検クイズ")
         title_label.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
+        title_label.setProperty("class", "title")
 
         yomi_button = QPushButton()
         yomi_button.setText("読み")
@@ -31,6 +32,7 @@ class Sidebar(QWidget):
         gojiteisei_button = QPushButton("誤字訂正")
         kaki_button = QPushButton("書き取り")
 
+        layout.addSpacing(20)
         layout.addWidget(title_label)
         layout.addSpacing(40)
         layout.addWidget(yomi_button)

@@ -1,3 +1,4 @@
+import os
 from PySide6.QtWidgets import (
     QApplication, 
     QMainWindow, 
@@ -9,6 +10,8 @@ from PySide6.QtWidgets import (
     QWidget
 )
 from PySide6.QtCore import QSize
+from openai import OpenAI
+from dotenv import load_dotenv
 from widgets.yomi_mode import YomiMode
 from widgets.yomi_menu import YomiMenu
 from widgets.sidebar import Sidebar
@@ -19,7 +22,9 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.setWindowTitle("漢検クイズ！")
-        self.setFixedSize(QSize(1400, 900))
+        self.setFixedSize(QSize(1700, 950))
+
+        self.client = self.generate_openai_client()
 
         self.main_box = QHBoxLayout()
 
@@ -31,7 +36,7 @@ class MainWindow(QMainWindow):
 
         self.yomi_menu = YomiMenu(self.yomi_quiz_start)
 
-        self.yomi_mode = YomiMode(self.yomi_quiz_end)
+        self.yomi_mode = YomiMode(self.yomi_quiz_end, self.client)
 
         self.stack.addWidget(self.yomi_menu)
 
@@ -42,13 +47,21 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(layout_widget)
         self.stack.setCurrentIndex(0)
 
+    def generate_openai_client(self) -> OpenAI:
+        load_dotenv()
+        client = OpenAI(
+            api_key=os.getenv("OPENAI_API_KEY")
+        )
+        return client
+
     def yomi_quiz_start(self):
         print("starting quiz!")
         self.yomi_mode.generate_question_set(
             self.yomi_menu.questions,
             self.yomi_menu.selected_grades,
             self.yomi_menu.kanji_only,
-            self.yomi_menu.jukugo_only
+            self.yomi_menu.jukugo_only,
+            self.yomi_menu.selected_difficulty
         )
         self.stack.setCurrentIndex(1)
 

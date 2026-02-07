@@ -25,7 +25,7 @@ def get_kanji_by_grade(grade: str) -> pd.DataFrame:
         df = pd.read_sql_query(sql_query, conn)
     return df
 
-def get_goi_by_grades(grades: List, kanji_only: bool = False, jukugo_only: bool = False) -> pd.DataFrame:
+def get_goi_by_grades(grades: List, difficulty: int, kanji_only: bool = False, jukugo_only: bool = False) -> pd.DataFrame:
     g = ", ".join([str(grade) for grade in grades])
     filters = ""
     if jukugo_only:
@@ -33,7 +33,7 @@ def get_goi_by_grades(grades: List, kanji_only: bool = False, jukugo_only: bool 
     elif kanji_only and not jukugo_only:
         filters = "and non_kanji = 0"
     with sqlite3.connect(path) as conn:
-        sql_query = f"select * from goi where grade in ({g}) {filters}"
+        sql_query = f"select * from goi where grade in ({g}) {filters} and frequency >= {difficulty}"
         df = pd.read_sql_query(sql_query, conn)
     return df
 
@@ -70,10 +70,9 @@ def get_example_sentences_for_kanji(kanji: str, client: OpenAI) -> pd.DataFrame:
             {
                 "role": "system",
                 "content": (
-                    "You work for a company that creates dictionaries, and your job is to create example sentences."
-                    "You have great pride in your extensive vocabulary, and love to demonstrate this by creating rich, detailed sentences."
-                    "You will be generating sentences when provided with a character or word."
-                    "Return the sentences as JSON following the attached schema."
+                    "Given a Japanese kanji you will generate sentences using that character."
+                    "The sentences will be natural and at a level appropriate for a JLPT N1 exam"
+                    "Keep sentence length to maximum 50 characters"
                 )
             },
             {

@@ -20,6 +20,7 @@ class YomiMenu(QWidget):
         self.selected_grades = None
         self.kanji_only = True
         self.jukugo_only = False
+        self.selected_difficulty = None
 
         self.question_amount = QSpinBox()
         self.question_amount.setMinimum(1)
@@ -27,11 +28,21 @@ class YomiMenu(QWidget):
         self.question_amount.valueChanged.connect(self.question_amount_changed)
         layout.addWidget(self.question_amount)
 
+        self.grade_label = QLabel("少なくとも１つの級を選べ")
         self.gradePicker = QListWidget()
         self.gradePicker.setSelectionMode(QListWidget.SelectionMode.MultiSelection)
         self.gradePicker.addItems(["１級", "1.5級", "2級", "2.5級", "3級", "4級", "5級", "6級", "7級", "8級", "9級", "10級"])
         self.gradePicker.selectionModel().selectionChanged.connect(self.grade_changed)
+        layout.addWidget(self.grade_label)
         layout.addWidget(self.gradePicker)
+
+        self.difficulty_label = QLabel("難易度を選べ")
+        self.difficulty_picker = QListWidget()
+        self.difficulty_picker.setSelectionMode(QListWidget.SelectionMode.SingleSelection)
+        self.difficulty_picker.addItems(["簡単", "普通", "難しい", "激難しい"])
+        self.difficulty_picker.selectionModel().selectionChanged.connect(self.difficulty_changed)
+        layout.addWidget(self.difficulty_label)
+        layout.addWidget(self.difficulty_picker)
 
         self.kanji_only_box = QCheckBox("Only words comprised entirely of kanji will appear")
         self.kanji_only_box.setCheckState(Qt.CheckState.Checked)
@@ -62,6 +73,10 @@ class YomiMenu(QWidget):
 
     def jukugo_only_changed(self, state):
         self.jukugo_only = Qt.CheckState(state) == Qt.CheckState.Checked
+
+    def difficulty_changed(self):
+        self.selected_difficulty = self.difficulty_picker.selectedItems()[0].text()
+        print(self.selected_difficulty)
 
     def reset_menu_screen(self):
         self.selected_grades = None

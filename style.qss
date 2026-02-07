@@ -8,3 +8,22 @@ QPushButton:hover{
     background-color:#0090C1;
     color:#183446;
 }
+
+QLabel.title{
+    font-size: 24px; 
+    qproperty-alignment: AlignCenter;
+}
+
+QLabel.info{
+    font-size: 20px; 
+    qproperty-alignment: AlignCenter;
+}
+
+QLabel.question{
+    font-size: 40px; 
+    qproperty-alignment: AlignCenter;
+}
+
+QLineEdit{
+    font-size: 30px;
+}
